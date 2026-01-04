@@ -1,0 +1,5 @@
+Ici, un mirroir de la dernière version (branche trunk) du code source de Marionnet, copié depuis le [launchpad de Marionnet](https://launchpad.net/marionnet). Évidemment, tous droits réservés aux créateurs, développeurs et contributeurs du projet Marionnet. Je conserve ici le code source car Launchpad prévois d'arrêter l'hébergement de le serveur Bazaar (ancêtre de Git) d'ici fin 2025.
+
+C'est avec ce code source que le logiciel a été compilé sur la machine virtuelle. Avec l'aide du script marionnet_from_scratch.
+
+Il y a aussi dans les releases de ce dépôt GitHub un export au format .zip splitté de [https://www.marionnet.org/](https://www.marionnet.org/downloads/) avec notamment la partie [/downloads](https://www.marionnet.org/downloads/) qui contient beaucoup de données importantes, notamment les filesystems des Linux ainsi que leurs noyaux UML associés.
