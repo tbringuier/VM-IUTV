@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Marionnet
+Exec=marionnet
+Comment=
+Terminal=false
+Icon=/usr/local/share/marionnet/images/marionnet-launcher.png
+Type=Application
