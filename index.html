@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: https://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>VM IUTV</title>
+    <meta name="description" content="Téléchargez la machine virtuelle IUTV dès maintenant ! Idéal pour étudiants en BUT R&T.">
+    <meta name="keywords" content="IUTV, VM, Machine Virtuelle, Lubuntu, GNS3, Marionnet, Téléchargement, OVA, BUT Réseaux et Télécommunications, IUT">
+    <meta name="author" content="iutv.folf.fr">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://iutv.folf.fr/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://iutv.folf.fr/">
+    <meta property="og:title" content="VM IUTV">
+    <meta property="og:description" content="Téléchargez la machine virtuelle IUTV dès maintenant ! Idéal pour étudiants en BUT R&T.">
+    <meta property="og:image" content="https://iutv.folf.fr/img/og-preview.jpg"> 
+    <meta property="og:locale" content="fr_FR">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VM IUTV">
+    <meta name="twitter:description" content="Téléchargez la machine virtuelle IUTV dès maintenant ! Idéal pour étudiants en BUT R&T.">
+    <meta name="twitter:image" content="https://iutv.folf.fr/img/og-preview.jpg">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "VM IUTV",
+      "operatingSystem": "VirtualBox, VMWare",
+      "applicationCategory": "EducationalApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "EUR"
+      },
+      "description": "Machine virtuelle pédagogique basée sur Lubuntu 24.04 avec outils réseaux et développement préinstallés.",
+      "author": {
+        "@type": "Person",
+        "name": "Tristan Bringuier",
+        "url": "https://github.com/tbringuier/"
+      },
+      "downloadUrl": "https://cdn-hms.folf.fr/IUTV/IUTV-v1.ova",
+      "featureList": "GNS3, Marionnet, Thonny, VS Code, PHP, Apache2"
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #222222;
+            --text-secondary: #555555;
+            --accent: #2563eb; 
+            --accent-hover: #1d4ed8;
+            --code-bg: #f1f1f1;
+            --border: #e5e7eb;
+            --focus-ring: rgba(37, 99, 235, 0.5);
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        header { margin-bottom: 2rem; }
+        
+        h1 {
+            margin-top: 0;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .specs-section { margin-bottom: 30px; }
+        
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .spec-item {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+
+        .spec-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+
+        .software-section {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .software-intro {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .software-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tag {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .gallery-section {
+            margin-bottom: 35px;
+            text-align: left;
+        }
+        
+        .gallery-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: block;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .gallery-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 15px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        
+        .gallery-scroll::-webkit-scrollbar { height: 8px; }
+        .gallery-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+
+        .gallery-scroll img {
+            height: 160px;
+            width: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            scroll-snap-align: center;
+            border: 1px solid var(--border);
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .btn-download {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            transition: transform 0.1s, background-color 0.2s;
+            margin-bottom: 25px;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-download:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .btn-download:active {
+            transform: translateY(1px);
+        }
+
+        .checksum-section {
+            text-align: left;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        code {
+            display: block;
+            background-color: var(--code-bg);
+            padding: 12px;
+            border-radius: 6px;
+            word-break: break-all;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            border: 1px solid var(--border);
+            user-select: all;
+            font-size: 0.8rem;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            padding-top: 25px;
+        }
+
+        footer a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dotted var(--text-secondary);
+        }
+
+        footer a:hover {
+            color: var(--accent);
+            border-bottom: 1px solid var(--accent);
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 25px; }
+            h1 { font-size: 1.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <header>
+            <h1>VM-IUTV</h1>
+            <p class="subtitle">Machine virtuelle pédagogique compatible VirtualBox & VMWare pour le BUT Réseaux et Télécommunications !</p>
+        </header>
+
+        <section class="specs-section" aria-label="Configuration requise">
+            <h2 class="visually-hidden" style="display:none">Configuration recommandée</h2>
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <span class="spec-label">RAM</span>
+                    4 Go
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Stockage</span>
+                    16 Go
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">CPU</span>
+                    4 Coeurs
+                </div>
+            </div>
+        </section>
+
+        <section class="software-section" aria-label="Logiciels préinstallés">
+            <p class="software-intro">Basée sur <strong>Lubuntu 24.04</strong> elle inclut les outils suivants :</p>
+            <ul class="software-tags">
+                <li><a href="https://www.gns3.com/" class="tag" target="_blank" rel="noopener noreferrer">GNS3</a></li>
+                <li><a href="https://marionnet.org/" class="tag" target="_blank" rel="noopener noreferrer">Marionnet</a></li>
+                <li><a href="https://thonny.org/" class="tag" target="_blank" rel="noopener noreferrer">Thonny</a></li>
+                <li><a href="https://code.visualstudio.com/" class="tag" target="_blank" rel="noopener noreferrer">VS Code</a></li>
+                <li><a href="https://www.php.net/" class="tag" target="_blank" rel="noopener noreferrer">PHP</a></li>
+                <li><a href="https://httpd.apache.org/" class="tag" target="_blank" rel="noopener noreferrer">Apache2</a></li>
+                <li><a href="https://www.postgresql.org/" class="tag" target="_blank" rel="noopener noreferrer">PostgreSQL</a></li>
+            </ul>
+        </section>
+
+        <section class="gallery-section" aria-label="Aperçu visuel">
+            <span class="gallery-label" aria-hidden="true">Aperçu de l'environnement</span>
+            <div class="gallery-scroll">
+                <img src="./img/image1.avif" alt="GNS3 préinstallé et prêt à l'emploi" loading="lazy">
+                <img src="./img/image2.avif" alt="Marionnet préinstallé et prêt à l'emploi" loading="lazy">
+                <img src="./img/image3.avif" alt="Visual Studio Code préinstallé et prêt à l'emploi" loading="lazy">
+                <img src="./img/image4.avif" alt="Thonny préinstallé et prêt à l'emploi" loading="lazy">
+                <img src="./img/image5.avif" alt="Bureau de la machine virtuelle avec fond d'écran Université Sorbonne Paris Nord" loading="lazy">
+            </div>
+        </section>
+
+        <section class="download-section">
+            <a href="https://cdn-hms.folf.fr/IUTV/IUTV-v1.ova" class="btn-download" download>
+                Télécharger IUTV.OVA
+            </a>
+            
+            <div class="checksum-section">
+                <label for="checksum-code"><strong>Vérifiez l'intégrité du téléchargement en comparant le hash SHA512 suivant :</strong></label>
+                <code id="checksum-code">3bef88ce483a9d8611c470c1611cb57fb60af391b12e2472b1dacf5c3748f029c6947dd4f6041cde31750241ef5b9e3ad90695a62b6de20557af4158db56ff83</code>
+            </div>
+        </section>
+
+        <footer>
+            Réalisé avec passion par <a href="https://github.com/tbringuier/" target="_blank" rel="noopener noreferrer">Tristan BRINGUIER</a><br>
+            Code source et détails technique sur <a href="https://github.com/tbringuier/vm-iutv" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </footer>
+    </main>
+</body>
+</html>
