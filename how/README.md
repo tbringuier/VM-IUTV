@@ -1,0 +1,1 @@
+C'est ici que j'expliquerais comment j'ai réussi à faire tourner Marionnet sur un environnement Linux à jour avec l'usage de Distrobox !
