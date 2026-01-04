@@ -1,0 +1,6 @@
+#!/bin/bash
+if ! pgrep -f "marionnet-daemon.native"; then
+        sudo marionnet-daemon.native &
+fi
+marionnet
+exit 0

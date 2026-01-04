@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Marionnet
+Comment=Laboratoire de réseau virtuel
+Exec=/home/etudiant/.local/bin/start-marionnet
+Icon=/usr/local/share/marionnet-launcher.png
+Terminal=false
+StartupNotify=true
+Categories=Education;Science;Network;
