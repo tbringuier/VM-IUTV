@@ -1,0 +1,36 @@
+--- /usr/bin/vncserver.orig
++++ /usr/bin/vncserver
+@@ -314,7 +314,8 @@
+ # Now start the X VNC Server
+
+ # We build up our Xvnc command with options
+-$cmd = $exedir."Xvnc :$displayNumber";
++# $cmd = $exedir."Xvnc :$displayNumber";
++$cmd = "/usr/bin/sudo /usr/bin/Xvnc :$displayNumber";
+
+ foreach my $k (sort keys %config) {
+   $cmd .= " -$k $config{$k}";
+@@ -358,14 +359,14 @@
+ 	sleep(3);
+     }
+ }
+-unless (kill 0, `cat $pidFile`) {
+-    warn "Could not start Xvnc.\n\n";
+-    unlink $pidFile;
+-    open(LOG, "<$desktopLog");
+-    while (<LOG>) { print; }
+-    close(LOG);
+-    die "\n";
+-}
++#unless (kill 0, `cat $pidFile`) {
++#    warn "Could not start Xvnc.\n\n";
++#    unlink $pidFile;
++#    open(LOG, "<$desktopLog");
++#    while (<LOG>) { print; }
++#    close(LOG);
++#    die "\n";
++#}
+
+ warn "\nNew '$desktopName' desktop is $host:$displayNumber\n\n";
+
+

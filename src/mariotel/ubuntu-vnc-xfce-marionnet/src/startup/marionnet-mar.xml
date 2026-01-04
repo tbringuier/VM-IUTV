@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/marionnet">
+  <comment>Marionnet gzipped project</comment>
+  <comment xml:lang="ar">أرشيف Marionnet</comment>
+  <comment xml:lang="be@latin">Archiŭ marionnet</comment>
+  <comment xml:lang="bg">Архив — marionnet</comment>
+  <comment xml:lang="ca">arxiu marionnet</comment>
+  <comment xml:lang="cs">archiv marionnet</comment>
+  <comment xml:lang="da">Marionnet-arkiv</comment>
+  <comment xml:lang="de">Marionnet-Archiv</comment>
+  <comment xml:lang="el">Συμπιεσμένο αρχείο Marionnet</comment>
+  <comment xml:lang="en_GB">Marionnet archive</comment>
+  <comment xml:lang="eo">Marionnet-arkivo</comment>
+  <comment xml:lang="es">archivador Marionnet</comment>
+  <comment xml:lang="eu">Marionnet artxiboa</comment>
+  <comment xml:lang="fi">Marionnet-arkisto</comment>
+  <comment xml:lang="fo">Marionnet skjalasavn</comment>
+  <comment xml:lang="fr">archive marionnet</comment>
+  <comment xml:lang="ga">cartlann Marionnet</comment>
+  <comment xml:lang="gl">arquivo Marionnet</comment>
+  <comment xml:lang="he">ארכיון Marionnet</comment>
+  <comment xml:lang="hr">Marionnet arhiva</comment>
+  <comment xml:lang="hu">Marionnet archívum</comment>
+  <comment xml:lang="ia">Archivo Marionnet</comment>
+  <comment xml:lang="id">Arsip Marionnet</comment>
+  <comment xml:lang="it">Archivio marionnet</comment>
+  <comment xml:lang="ja">Marionnet アーカイブ</comment>
+  <comment xml:lang="kk">Marionnet архиві</comment>
+  <comment xml:lang="ko">GZIP 압축 파일</comment>
+  <comment xml:lang="lt">Marionnet archyvas</comment>
+  <comment xml:lang="lv">Marionnet arhīvs</comment>
+  <comment xml:lang="nb">Marionnet-arkiv</comment>
+  <comment xml:lang="nl">Marionnet-archief</comment>
+  <comment xml:lang="nn">Marionnet-arkiv</comment>
+  <comment xml:lang="oc">archiu marionnet</comment>
+  <comment xml:lang="pl">Archiwum marionnet</comment>
+  <comment xml:lang="pt">arquivo Marionnet</comment>
+  <comment xml:lang="pt_BR">Pacote Marionnet</comment>
+  <comment xml:lang="ro">Arhivă Marionnet</comment>
+  <comment xml:lang="ru">Архив GZIP</comment>
+  <comment xml:lang="sk">Archív marionnet</comment>
+  <comment xml:lang="sl">Datoteka arhiva Marionnet</comment>
+  <comment xml:lang="sq">Arkiv marionnet</comment>
+  <comment xml:lang="sr">Гзип архива</comment>
+  <comment xml:lang="sv">Marionnet-arkiv</comment>
+  <comment xml:lang="tr">Marionnet arşivi</comment>
+  <comment xml:lang="uk">архів marionnet</comment>
+  <comment xml:lang="vi">Kho nén marionnet</comment>
+  <comment xml:lang="zh_CN">Marionnet 归档文件</comment>
+  <comment xml:lang="zh_TW">Marionnet 封存檔</comment>
+  <generic-icon name="package-x-generic"/>
+  <glob pattern="*.mar"/>
+  <alias type="application/x-marionnet"/>
+</mime-type>

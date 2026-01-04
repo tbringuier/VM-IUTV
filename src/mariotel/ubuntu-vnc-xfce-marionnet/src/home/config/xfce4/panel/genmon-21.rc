@@ -1,0 +1,6 @@
+Command=hostname
+UseLabel=1
+Text=\ 
+UpdatePeriod=6000000
+Font=Monospace Bold 16
+

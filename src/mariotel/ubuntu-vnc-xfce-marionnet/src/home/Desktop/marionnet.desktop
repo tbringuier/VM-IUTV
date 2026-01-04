@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Marionnet
+Comment=Network simulator
+Exec=marionnet.native %F
+Icon=/usr/local/share/marionnet/images/marionnet-launcher.png
+Terminal=false
+StartupNotify=false
+Path=/home/student

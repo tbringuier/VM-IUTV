@@ -1,0 +1,8 @@
+*
+!src
+*.md
+*.sh
+debug*
+developer*
+scrap*
+TODO*

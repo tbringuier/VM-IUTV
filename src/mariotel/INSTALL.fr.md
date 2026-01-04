@@ -1,0 +1,511 @@
+# Installation de Mariotel
+
+## Table des matières
+
+1. [Introduction](#Intro)
+1. [Prérequis](#Requirements)
+	1. [Matériel](#Hardware)
+	1. [Système](#System)
+		1. [Packages](#PackagesList)
+		1. [Installation](#PackagesInstall)
+	1. [Réseau](#Network)
+1. [Installation de Mariotel](#Install)
+	1. [Utilisateur dédié](#User)
+	1. [Clonage du dépot Git](#GitClone)
+	1. [Installation des dépendances](#DependenciesInstall)
+		1. [Manuellement](#ManuallInstall)
+		1. [Automatiquement avec `make`](#ScriptedInstall)
+	1. [Modifications sur le système](#SystemChanges)
+		1. [PHP](#PHP)
+		1. [Apache](#Apache)
+		1. [Paramètres du noyau](#Kernel)
+		1. [Système de fichiers](#FileSystem)
+	1. [Installation/Création du conteneur de Mariotel](#DockerCreation)
+		1. [Installation BDD et interface web](#FrontAndBackEndInstall)
+		1. [Initialisation de la base de données](#DatabaseSetup)
+		1. [Installation de Unison](#Unison)
+		1. [Installation de Yarn](#YarnInstall)
+		1. [Installation des fichiers de l'interface web](#WebGUISetup)
+	1. [Taches programmées](#CRON)
+1. [Premiers Pas](#FirstSteps)
+
+
+## Introduction <a name="Intro"></a>
+
+Ce document vous guidera dans l'installation de Mariotel sur une machine (un serveur) Linux Debian 10, mais devrait être applicable à la plupart des distributions Linux, pour peu que Marionnet s'y installe correctement.
+
+Je vous conseille ***très fortement*** de bien lire ***tout*** le présent document ***avant*** de vous lancer dans l'aventure : il est possible que des informations soient données dans un ordre peu adapté, ce document étant en cours de rédaction.
+
+## Prérequis <a name="Requirements"></a>
+
+### Matériel <a name="Hardware"></a>
+
+En installant Mariotel, il faut penser qu'on est proche d'une infrastructure type VDI ou mainframe, et qu'il faut dimensionner le serveur en conséquence.
+
+À ce stade du développement, nous conseillons ceci :
+
+- Un thread de CPU pour 2-3 machines de Mariotel. Notre machine de test fait 32 threads (2 CPU * 8 cœurs * 2 threads), et elle nous permet de faire fonctionner sans problème 60-70 machines virtuelles de Mariotel sans problème ;
+- 1 Go de RAM par machine de Mariotel, nous utilisons 96 Go pour les 60-70 machines ;
+- 4 Go d'espace disque par machine de Mariotel : 1 Go dans le système de fichier 'ordinaire' et 2 Go en partition swap.
+
+### Système <a name="System"></a>
+
+Linux Debian 10 "de base" : j'ai personnellement fait l'installation avec uniquement le serveur SSH ("SSH server") et les outils de base ("standard system utilities").
+
+Juste 2-3 choses importantes à prendre en compte lors de l'installation de la distribution pour la suite, ou à vérifier et changer plus tard :
+
+- il est impératif d'utiliser XFS comme système de fichiers pour la partition root ("/") ou pour la partition ou seront stockés les fichiers temporaires de Docker ;
+- XFS doit être utilisé avec des options particulières au formatage et au montage (c'est expliqué dans le fichier/script "README.kernel-settings.sh")
+- la commande de chargement du noyau doit être modifiée pour ajouter des paramètres s'ils ne sont pas déjà présents (expliqué dans le script)
+- il faut désactiver l'utilisation de "transparent huge pages" au niveau du noyau (ce sera fait par le script par la suite) ;
+- il est conseillé de changer le "soft lockup panic" du noyau en "kernel panic" et d'associer ce dernier à un reset du système pour que le serveur redémarre en cas de crash (ça sera fait plus loin, toujours avec le même script)
+
+
+### Réseau <a name="Network"></a>
+
+Un petit point sur ce qui est nécessaire au niveau du réseau pour que Mariotel puisse être utilisé.
+
+#### Bande Passante <a name="Bandwith"></a>
+
+L'utilisation de bande passante est assez minime.
+
+À l'usage, pour environ 120 conteneurs docker de Mariotel lancés et utilisés simultanément, le débit maximum constaté se situe aux alentours de 3Mo/s (24Mb/s) pendant des séances de TP des étudiants.
+
+Cela peut évidemment varier suivant les usages.
+
+#### Ports Utilisés <a name="NetworkPorts"></a>
+
+Suivant la configuration désirée et utilisée les ports HTTP (80) et HTTPS (443) sont utilisés et doivent être accessible sur le serveur. À moins que vous ne souhaitiez une configuration différente, libre à vous de paramétrer `apache` autrement :)
+
+En plus de ces un ou deux ports, des ports TCP sont nécessaires pour l'accès aux conteneurs au travers de noVNC.
+La configuration "par défaut" utilise la plage 26900-28000 (le port de fin dépend du nombre de sessions simultanées).
+
+
+
+#### Clients <a name="Clients"></a>
+
+La connexion aux conteneurs de Mariotel se fait au travers de noVNC.
+
+Pour s'y connecter, les clients on donc simplement besoin d'un navigateur supportant HTML5, c'est à dire l'ensemble des navigateurs web actuels, en dehors de IE 10.
+
+Cela devrait permettre de se connecer au système à partir de presque n'importe quoi : PC Linux, Windows, Mac, Chromebook, tablette Android, iPad, et même un iPhone ou un téléphone Andriod !
+
+Cela étant dit, un écran de taille raisonnable, un clavier et une souris restent quand même plus pratique qu'un téléphone...
+
+
+#### Liste des packages <a name="PackagesList"></a>
+Voici la liste des packages nécessaire au fonctionnement ou à l'installation de Mariotel
+
+* `make`
+* `sudo`
+* `sysfsutils` (installé par un script si pas fait avant)
+* `default-mysql-server` (il installera mariadb-server, mais vous pouvez utiliser celui que vous voulez pour le serveur de base de donnée MySQL)
+* `apache2`
+* `libapache2-mod-php`
+* `php`
+* `php-mysql`
+* `php-mbstring`
+* `apt-transport-https`
+* `ca-certificates`
+* `curl`
+* `docker-compose`
+* `gnupg-agent`
+* `software-properties-common`
+* `git`
+* `geoip-bin`
+* `geoip-database`
+* reste tout un tas de packages qui seront installés par la suite, qui sont relatifs et nécessaire au fonctionnement de Marionnet.
+
+
+#### Installation des prérequis <a name="PackagesInstall"></a>
+Sur Debian 10, pour faire court, en root, ou avec sudo :
+
+`apt install make php-mysql default-mysql-server git sysfsutils sudo`
+
+C'est suffisant pour le moment, le reste devrait être  automagicallement installé par les scripts de Mariotel et Marionnet, ou manuellement au besoin :)
+
+
+
+## Installation de Mariotel <a name="Install"></a>
+
+### Utilisateur dédié <a name="User"></a>
+
+
+Si ce n'est pas déjà fait, il faut créer un utilisateur mariotel.
+
+
+### Clonage du dépôt Git <a name="GitClone"></a>
+Un dépôt Git est disponible pour Mariotel. Il faut récupérer sont contenu pour la suite de son installation.
+
+En pratique, on se connecte en tant qu'utilisateur mariotel :
+
+`(sudo) su - mariotel`
+
+On créé un répertoire pour y stocker la copie du dépot Git :
+
+`mkdir /home/mariotel/repo`
+
+On clone le dépot Git :
+
+`git clone https://depot.lipn.univ-paris13.fr/marionnet/mariotel.git repo`
+
+
+### Installation des dépendances <a name="DependenciesInstall"></a>
+
+Un fichier Makefile est prévu pour mettre en place les dépendances (paquets et autres).
+
+#### Manuellement <a name="ManuallInstall"></a>
+
+Si vous souhaitez faire cette phase manuellement et/ou que vous n'êtes pas sous Debian 10 :
+
+```
+(sudo) apt install apt-transport-https ca-certificates curl gnupg-agent software-properties-common docker-compose php libapache2-mod-php php-mbstring
+```
+
+ou installez les équivalents avec le gestionnaire de paquets de votre distribution.
+
+
+Il faut également ajouter l'utilisateur `mariotel` au groupe `docker` :
+
+`(sudo) usermod -aG docker mariotel`
+
+#### Automatiquement avec `make` <a name="ScriptedInstall"></a>
+
+Si ce n'est pas déjà fait, il faut ajouter l'utilisateur `mariotel` au groupe `sudo` :
+
+`(sudo) usermod -aG sudo mariotel`
+
+Il vous suffit ensuite de lancer la commande suivante en tant qu'utilisateur `mariotel` dans le répertoire `/home/mariotel/repo` :
+
+`make dependencies`
+
+le script devrait vous demander d'entrer le mot de passe de l'utilisateur `mariotel` (pour faire des commandes avec sudo) et s'occuper du reste.
+
+Il faut maintenant déconnecter et reconnecter l'utilisateur `mariotel` pour la suite (il vient d'être ajouté au groupe `docker`).
+
+
+### Modifications sur le système <a name="SystemChanges"></a>
+
+Pour que l'ensemble fonctionne correctement, il faut faire quelques modification et vérifications sur le système linux (noyau et ses paramètres) et son système de fichiers. Il y a également une modification/vérification mineure à faire sur Apache, qui servira l'interface Web.
+
+Ces modification sont expliquées dans les fichiers `README.kernel-settings.sh` et `README.apache.mod_rewrite.sh`. Elles sont également partiellement automatisées, mais nous allons le faire manuellement dans les points suivants.
+
+
+#### PHP <a name="PHP"></a>
+
+Une modification mineure, pour activer l'extension `mysqli`.
+
+Il faut décommenter dans le fichier `/etc/php/$VER/apache2/php.ini` (remplacer `$VER` par la version de PHP que vous utilisez) la ligne :
+
+```
+;extension=mysqli
+```
+
+qui devriendra donc :
+
+```
+extension=mysqli
+```
+
+
+#### Apache <a name="Apache"></a>
+
+Les modifications à faire ici sont relativement simples et minimes :
+
+- activer le module `rewrite` : `a2enmod rewrite`
+- activer le module `SSL` : `a2enmod ssl`
+
+- vérifier / modifier `/etc/apache2/sites-available/000-default.conf` et s'assurer que la section `<VirtualHost *:80>` contient :
+
+```
+		<Directory /var/www/html>
+		   Options Indexes FollowSymLinks MultiViews
+		   AllowOverride All
+		   Require all granted
+        </Directory>
+```
+
+et
+
+```
+		RewriteEngine On
+		RewriteCond %{HTTPS} off
+		RewriteCond %{SERVER_PORT} 80
+		RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+```
+
++ toujours dans le même fichier, pour  `<VirtualHost *:443>` :
+
+```
+		<VirtualHost *:443>
+			ServerName  tel.marionnet.org
+
+			ServerAdmin webmaster@localhost
+			DocumentRoot /var/www/html
+
+			ServerSignature Off
+
+			ErrorLog ${APACHE_LOG_DIR}/error.log
+			CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+			SSLEngine on
+			SSLCertificateFile /etc/ssl/certs/mariotelserver.crt
+			SSLCertificateKeyFile /etc/ssl/private/mariotelserver.key
+
+		</VirtualHost>
+```
+
+- redémarrer Apache pour que l'ensemble des modifications précédentes soient prises en compte : `systemctl restart apache2`
+
+Je vous laisse regarder dans `README.apache.mod_rewrite.sh` pour avoir plus de détails.
+
+Pensez à adapter l'ensemble de cette configuration suivant vos besoins !
+(notamment : fichiers de configuration différents, fichier spécifique pour HTTPS, `ServerName`, fichiers pour le certificat SSL)
+
+
+#### Paramètres du noyau <a name="Kernel"></a>
+
+##### Désactivation des `Transparent Huge Pages`
+
+Ceci se fait rapidement avec la commande suivante :
+
+```
+echo "kernel/mm/transparent_hugepage/enabled = never" >> /etc/sysfs.conf
+```
+
+Cette commande permettra de le désactiver aux prochains redémarrages, pour l'activer immédiatement, vous pouvez faire :
+
+```
+echo "never" >> /sys/kernel/mm/transparent_hugepage/enabled
+```
+
+##### Redémarrage automatique en cas de crash
+
+Pour éviter de laisser le serveur planté en cas de `soft lockup`, on le transforme en `kernel panic` et on ajoute un délai pour pour qu'un kernel panic redémarre le serveur au cas où :
+
+```
+{
+echo '###################################################################';
+echo '# Kernel softlockup panic => kernel panic ';
+echo 'kernel.softlockup_panic=1      # this will panic on soft lockup';
+echo 'kernel.panic=60                # reset system on panic after 60 seconds';
+} >> /etc/sysctl.conf
+```
+
+Comme pour les `Transparent Huge Pages`, pour que ce soit pris en compte immédiatement, vous pouvez faire les commandes suivantes :
+
+```
+sysctl kernel.softlockup_panic=1
+sysctl kernel.panic=60
+```
+
+#### Système de fichiers <a name="FileSystem"></a>
+
+##### Formatage
+
+Pour la partition root (`/`), que vous avez du formater en XFS, il faut vérifier que l'option `d_type=true` est bien active.
+
+La commande `xfs_info / | grep ftype` devrait vous retourner une ligne contenant `ftype=1`.
+
+Si ce n'est pas le cas, vous devez reformater la partition (=tout réinstaller :'-( ) avec `mkfs.xfs -f -n ftype=1 /dev/sda1` (adaptez si vous n'utilisez pas `sda1`)
+
+##### Montage de la partition
+
+Il faut s'assurer également que la partition est montée avec les bonnes options.
+
+Dans `/etc/fstab`, assurez vous que la partition `/` est montée avec les options `uquota` et `pquota`. Ce qui devrait donner quelque chose comme :
+
+```
+/dev/sda1 / xfs rw,relatime,attr2,inode64,usrquota,prjquota 0 0
+```
+
+ou
+
+```
+UUID=c136f429-0a8c-4f80-9a60-a730e6c4ed1a / xfs defaults,uquota,pquota 0 0
+```
+
+
+##### Grub
+
+Encore une modification pour la gestion du système de fichiers : il faut modifier quelques options de `grub` dans `/etc/default/grub`, pour passer de :
+
+```
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"
+GRUB_CMDLINE_LINUX=""
+```
+
+à
+
+```
+GRUB_CMDLINE_LINUX_DEFAULT="rootflags=uquota,pquota quiet"
+GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"
+```
+
+
+et appliquer les modifications avec la commande `update-grub`
+
+<br />
+Vous pouvez maintenant redémarrer votre serveur pour que toutes les modifications précédentes soient prisent en compte et vérifier qu'elle soient bien effectives.
+
+
+
+
+
+### Installation/Création du conteneur de Mariotel <a name="DockerCreation"></a>
+
+Une fois les dépendances installées, il faut lancer la commande suivante pour lancer la création du conteneur docker de Mariotel :
+
+(dans `/home/mariotel/repo/`)
+
+`make build`
+
+C'est un peu long, un peu de patience ;)
+Au passage, si vous êtes connecté avec `ssh` au serveur, je vous conseille de lancer cette commande dans un `screen` ou un `tmux`.`
+
+### Installation BDD et interface web <a name="FrontAndBackEndInstall"></a>
+
+#### Initialisation de la base de données <a name="DatabaseSetup"></a>
+
+Dans le répertoire `repo` ou sont les fichiers de Mariotel, aller dans le sous-dossier `webgui`, puis effectuer les commandes suivantes :
+
+```
+(sudo) mysql
+USE mysql;
+CREATE USER 'mariotel'@'localhost' IDENTIFIED BY 'MariotelMysql2020!!';
+GRANT ALL PRIVILEGES ON *.* TO 'mariotel'@'localhost';
+FLUSH PRIVILEGES;
+COMMIT;
+EXIT;
+(sudo) mysql <users-table/users.sql
+```
+
+Cela devrait créer un utilisateur/mot de passe dans mysql, lui donner les bons droits et initialiser la base de donnée.
+Vous pouvez adapter à votre contexte, mais il faudra adapter le fichier SQL et les autres fichiers comportant ces références dans le "webgui".
+
+
+#### Installation de Unison <a name="Unison"></a>
+
+Unison est utilisé pour synchroniser les fichiers entre les fichiers du dossier repo (fichiers téléchargés avec git clone) et le répertoire `/var/www/html/`
+
+Installation :
+
+##### À la main
+
+dans `/home/mariotel/repo/` :
+
+```
+mkdir -p UNISON
+cd UNISON
+
+wget http://mirrors.kernel.org/ubuntu/pool/universe/u/unison/unison_2.48.4-1ubuntu1_amd64.deb
+
+sudo apt install -y alien
+alien --to-tgz unison_2.48.4-1ubuntu1_amd64.deb
+tar -xvf unison-2.48.4.tgz ./usr/bin/unison-2.48.4
+mv usr/bin/unison-2.48.4* .
+
+rmdir ./usr/bin/
+rmdir ./usr/
+rm -f unison_2.48.4-1ubuntu1_amd64.deb unison-2.48.4.tgz
+```
+
+##### Automatique (scriptée)
+
+dans `/home/mariotel/repo/` :
+
+```
+bash README.unison.sh
+```
+
+Quelques explications sont dans les commentaires du script.
+
+
+#### Installation de Yarn <a name="YarnInstall"></a>
+
+```
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt update && sudo apt install yarn
+```
+
+
+dans `/home/mariotel/repo/webgui/`
+
+```
+yarn add eonasdan-bootstrap-datetimepicker
+```
+
+
+#### Installation des fichiers de l'interface web <a name="WebGUISetup"></a>
+
+`make install-with-unison`
+(toujours dans le même répertoire)
+
+Cette commande devrait déposer tous les fichiers nécessaires dans `/var/www/html/`.
+
+
+
+### Taches programmées <a name="CRON"></a>
+
+Pour le lancement automatisé des sessions programmées de Mariotel, nous utilisons `cron`.
+
+Il faut ajouter la ligne suivante dans la `crontab` de `root`, avec `crontab -e` en tant que `root` ou dans un des fichiers système, comme `/etc/crontab`.
+
+Voici la ligne à insérer dans la `crontab` de `root` :
+
+```
+*/2 * * * * /home/mariotel/repo/session_manager.sh >/var/log/mariotel.session_manager.sh.log 2>&1
+```
+
+Par précaution vis-à-vis d'éventuelles fuites de mémoire provoquées par l'utilisation intensive de Docker
+sur le long terme, on peut rajouter une ligne pour redémarrer le système chaque nuit :
+
+```
+# Reboot the system every day at 4:01am
+1 4 * * * /usr/sbin/reboot
+```
+
+## Premiers Pas <a name="FirstSteps"></a>
+
+
+Vous pouvez dès à présent vous connecter à l'interface de gestion/réservation de Mariotel avec un navigateur web en accédant à l'adresse IP ou au FQDN de votre serveur.
+
+L'utilisateur et le mot de passe par défaut sont : admin / password
+Assurez-vous de changer le mot de passe rapidement ;)
+
+<br />
+Si vous souhaitez ajouter d'autres comptes administrateurs au système, vous pouvez d'abord les créer via l'insterface web.
+
+Il faudra ensuite faire une modification dans la base de données :
+
+```
+root@mariotel:~# mysql
+
+USE mariotel;
+
+select * from users;
+
++----+----------+--------------+-------+------------+---------------------+-------------+
+| id | username | password     | email | created_by | created_at          | admin_level |
++----+----------+--------------+-------+------------+---------------------+-------------+
+|  4 | martin   | ************ | NULL  | admin      | 2020-11-15 12:34:56 |           0 |
+|  8 | dupont   | ************ | NULL  | admin      | 2020-11-15 11:22:33 |           1 |
++----+----------+--------------+-------+------------+---------------------+-------------+
+
+UPDATE users SET admin_level = 2 where username = 'martin';
+
+quit;
+```
+
+l'utilisateur ayant le login `martin` aura ainsi les mêmes droits que l'utilisateur `admin`.
+<br />
+
+### Sur les droits
+Dans la version courante (27/11/2020, commit `74f16ecc14adda97d5d31cbe1865559e31432734`), les niveaux de droits définis (`admin_level`) sont croissants :
+
+* 0 donne juste droit à créer des réservations (pour des séances limitées à une durée de 5h et de maximum 32 postes)
+
+* 1 permet des réservations de longue durée (maximum 10h) et le droit d'ajouter d'autres utilisateurs, c'est-à-dire d'autres enseignants (un bouton `Inscrire` apparaît sur l'interface web)
+
+* 2 permet de réserver des séances jusqu'à 320 postes (pour des salles en libre accès ou pour des crash tests), et d'agir arbitrairement sur les séances réservées par d'autres utilisateurs
